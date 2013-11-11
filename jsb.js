@@ -187,6 +187,27 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 	} else {
 		switch (type) {
 			case 'string':
+				if (schema.large && !schema.hidden) {
+					/*
+						This is a non-standard option, used to indicate that we
+						should render this field using a textarea instead of a
+						simple input.
+					*/
+					html += '<textarea name="' + id + '" class="' + type + '"';
+					if (schema.readonly) {
+						html += ' readonly';
+					}
+					html += '>';
+					if (data) {
+						html += htmlEncode(data);
+					}
+					html += '</textarea><br/>';
+
+					break;
+				}
+
+				/* fallthrough */
+
 			case 'number':
 			case 'integer':
 			case 'boolean':
@@ -479,6 +500,7 @@ JSB.prototype.getValue = function(element)
 			}
 			break;
 
+		case 'textarea':
 		case 'input':
 			if (!detail) break;
 
