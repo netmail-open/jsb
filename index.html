@@ -60,20 +60,23 @@
 							"minItems":     1,
 							"maxItems":     3
 						},
-						"description": {
-							"type":			"string",
-							"required":		true
-						},
+						"detail": {
+							"type":			"object",
 
-						"match": {
-							"type":			"string",
-							"description":	"The check that should be applied to ensure this dependency is met",
-							"required":		true,
-							"enum": [
-								">=", ">",
-								"<=", "<",
-								"==", "!="
-							]
+							"properties": {
+								"description": {
+									"type":			"string",
+									"required":		true
+								},
+
+								"type": {
+									"type":			"string",
+									"required":		true,
+									"enum": [
+										"unknown", "free", "paid"
+									]
+								}
+							}
 						}
 					}
 				},
@@ -85,31 +88,10 @@
 						"private": {
 							"type":			"boolean"
 						},
-						"importance": {
-							"type":			"string",
-							"enum": [
-								"optional",
-								"recommended",
-								"important"
-							]
-						},
 						"other": {
 							"type":			"array",
 							"items": {
 								"$ref":		"Other"
-							}
-						},
-
-						"detail": {
-							"type":			"object",
-
-							"properties": {
-								"foo": {
-									"type":	"string"
-								},
-								"bar": {
-									"type":	"string"
-								}
 							}
 						}
 					}
@@ -117,14 +99,13 @@
 			};
 
 			var data = {
-				"component":	"secure",
-				"version":		"1.2.3",
-				"manual":		true,
-				"importance":	"recommended",
-				"password": [
-					"secret",
-					"beta"
-				]
+				"name":				[ "foo", "bar" ],
+				"private":			true,
+
+				"detail": {
+					"description":	"An example object",
+					"type":			"free"
+				}
 			};
 
 			var f = document.getElementById('form');
