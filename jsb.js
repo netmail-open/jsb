@@ -337,11 +337,13 @@ JSB.prototype.render = function(options)
 	this.element.innerHTML = html;
 	this.element.addEventListener('click', function(e) {
 		var detail;
-		var target;
+		var target	= null;
 
-		if (!e || !(target = e.toElement) ||
-			!(detail = this.getDetail(target))
-		) {
+		if (e) {
+			target = e.toElement || e.target;
+		}
+
+		if (!target || !(detail = this.getDetail(target))) {
 			return;
 		}
 
