@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+		<title>Test</title>
+
+		<script src="htmlEncode.js"></script>
+		<script src="tv4.js"></script>
+		<script src="jsb.js"></script>
+
+		<style>
+			label {
+				width:			100px;
+				display:		inline-block;
+				text-align:		right;
+
+				vertical-align:	top;
+			}
+
+			button {
+				vertical-align:	top;
+			}
+
+			fieldset {
+				border:			1px solid #aaa;
+			}
+
+			.object > span > fieldset {
+				margin-left:	100px;
+			}
+
+			.jsb,
+			.jsb > fieldset {
+				border:			0px;
+				margin:			0px;
+			}
+
+			.invalid {
+				border:			1px solid #f00;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="form"></div>
+		<button id="save">Save</button>
+		<button id="validate">Validate</button>
+
+		<script>
+			var schema = {
+				"Other": {
+					"name":					"Other",
+
+					"properties": {
+						"name": {
+							"type":			[ "string", "array" ],
+							"required":		true,
+
+							"items": {
+								"type":		"string"
+							},
+
+							"minItems":     1,
+							"maxItems":     3
+						},
+						"description": {
+							"type":			"string",
+							"required":		true
+						},
+
+						"match": {
+							"type":			"string",
+							"description":	"The check that should be applied to ensure this dependency is met",
+							"required":		true,
+							"enum": [
+								">=", ">",
+								"<=", "<",
+								"==", "!="
+							]
+						}
+					}
+				},
+
+				"Example": {
+					"name":					"Example",
+					"extends":				"Other",
+
+					"properties": {
+						"private": {
+							"type":			"boolean"
+						},
+						"importance": {
+							"type":			"string",
+							"enum": [
+								"optional",
+								"recommended",
+								"important"
+							]
+						},
+						"other": {
+							"type":			"array",
+							"items": {
+								"$ref":		"Other"
+							}
+						},
+
+						"detail": {
+							"type":			"object",
+
+							"properties": {
+								"foo": {
+									"type":	"string"
+								},
+								"bar": {
+									"type":	"string"
+								}
+							}
+						}
+					}
+				},
+			};
+
+			var data = {
+				"component":	"secure",
+				"version":		"1.2.3",
+				"manual":		true,
+				"importance":	"recommended",
+				"password": [
+					"secret",
+					"beta"
+				]
+			};
+
+			var f = document.getElementById('form');
+			var jsb = new JSB(f, data);
+
+			jsb.setSchema(schema["Example"], function(name) {
+				console.log("Load ref:", name);
+
+				return(schema[name]);
+			});
+
+			jsb.render();
+
+			document.getElementById('save').addEventListener('click', function(e) {
+				console.log(JSON.stringify(jsb, null, "   "));
+			});
+
+			document.getElementById('validate').addEventListener('click', function(e) {
+				if (jsb.validate()) {
+					alert('Yup, all good');
+				} else {
+					alert('Sorry, not valid');
+				}
+			});
+		</script>
+	</body>
+</html>
+
