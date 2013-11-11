@@ -9,7 +9,7 @@ var JSB = function(element, data)
 
 JSB.prototype.setSchema = function(schema, loadSchemaCB)
 {
-	this.schema		= schema;
+	this.schema		= this.fixupSchema(schema);
 	this.schemaCB	= loadSchemaCB;
 };
 
@@ -87,6 +87,7 @@ JSB.prototype.fixupSchema = function(schema)
 			extendlist = schema['extends'];
 			break;
 	}
+	delete schema['extends'];
 
 	for (var i = 0, e; e = extendlist[i]; i++) {
 		var supero;
@@ -388,6 +389,13 @@ JSB.prototype.getValue = function(element)
 			case 'array':
 				var fieldset = null;
 
+				if (!isNaN(detail.schema.minItems) &&
+					detail.schema.minItems > 0
+				) {
+					/* Always include an array that requires items */
+					value = [];
+				}
+
 				for (var i = 0, n; n = element.childNodes[i]; i++) {
 					if (n.nodeName.toLowerCase() == 'fieldset') {
 						fieldset = n;
@@ -470,7 +478,12 @@ JSB.prototype.validate = function(el)
 			If tv4 is present then validate the whole document in one go as well
 			as doing the individual items for the sake of highlighting.
 		*/
-		valid = tv4.validate(this.getValue(this.element), this.schema);
+		this.schema = this.fixupSchema(this.schema);
+		valid = tv4.validate(this.getValue(this.element), this.schema, true, true);
+
+		if (!valid) {
+			console.log(tv4.error);
+		}
 	}
 
 	if (!(el = el || this.element)) {
@@ -483,7 +496,7 @@ JSB.prototype.validate = function(el)
 			if (tv4) {
 				/* Use tv4 if loaded */
 				if (!tv4.validate(this.getValue(el), detail.schema)) {
-					console.log(tv4.error);
+					// console.log(tv4.error);
 
 					this.addClass(el, 'invalid');
 					return(false);
