@@ -233,16 +233,24 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 					html += '<span class="' + id + ' ' + type + '">';
 					html += '<button class="add_button" name="' + id + '">+</button>';
 
-					if (Object.prototype.toString.call(data) !== "[object Array]") {
-						/*
-							Assume that this is intended to be an array of this
-							item, which is possible if the item has multiple
-							allowed types.
+					switch (Object.prototype.toString.call(data)) {
+						case '[object Array]':
+						case '[object Undefined]':
+						case '[object Null]':
+							/* Leave alone */
+							break;
 
-							Let validation sort it out later. Just try to render
-							it now.
-						*/
-						data = [ data ];
+						default:
+							/*
+								Assume that this is intended to be an array of this
+								item, which is possible if the item has multiple
+								allowed types.
+
+								Let validation sort it out later. Just try to render
+								it now.
+							*/
+							data = [ data ];
+							break;
 					}
 
 					if (data) {
