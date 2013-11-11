@@ -205,7 +205,7 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 					this.iddata[id].item	= item;
 
 					html += '<span class="' + id + ' ' + type + '">';
-					html += '<button name="' + id + '">+</button>';
+					html += '<button class="add_button" name="' + id + '">+</button>';
 
 					if (data) {
 						html += '<fieldset>';
@@ -248,7 +248,7 @@ JSB.prototype.insertArrayItem = function(item, data, options)
 	var id		= this.uniqueName();
 	var html	= '';
 
-	html += '<button style="float: right;" name="' + id + '">X</button>';
+	html += '<button class="del_button" name="' + id + '">X</button>';
 
 	html += this.renderHTML(item, null, data, options);
 
