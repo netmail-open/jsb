@@ -1,0 +1,41 @@
+.jsb label {
+	width:			100px;
+	display:		inline-block;
+	text-align:		right;
+
+	vertical-align:	top;
+}
+
+.jsb button {
+	vertical-align:	top;
+}
+
+.jsb button.del_button {
+	float:			right;
+	clear:			both;
+}
+
+.jsb fieldset {
+	border:			1px solid #aaa;
+}
+
+.jsb .object > span > fieldset {
+	margin-left:	100px;
+}
+
+.jsb,
+.jsb > fieldset {
+	border:			0px;
+	margin:			0px;
+}
+
+.jsb span.invalid {
+	border:			0px;
+}
+
+.jsb span.invalid > fieldset,
+.jsb span.invalid > button,
+.jsb .invalid {
+	border:			1px solid #f00;
+}
+
