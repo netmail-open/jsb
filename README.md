@@ -6,7 +6,7 @@ json-schema builder: A simple javascript based form generator based on json-sche
 
 Example
 =======
-
+```
 <div id="form"></div>
 
 <script>
@@ -29,5 +29,5 @@ Example
 
 	jsb.render();
 </script>
-
+```
 
