@@ -132,12 +132,17 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 
 		case 'object':
 			/*
-				If an array of types was given assume that the last is the best
-				choice. Why did I chose this? It seemed to work with the common
-				case of:
+				If multiple types are allowed attempt to use array, since it is
+				the most complex one that we support.
+
+				For example:
 					[ 'string', 'array' ]
 			*/
-			type = schema.type[schema.type.length - 1];
+			if (-1 != schema.type.indexOf('array')) {
+				type = 'array';
+			} else {
+				type = schema.type[0];
+			}
 			break;
 	}
 	this.iddata[id].type = type;
@@ -227,6 +232,18 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 
 					html += '<span class="' + id + ' ' + type + '">';
 					html += '<button class="add_button" name="' + id + '">+</button>';
+
+					if (Object.prototype.toString.call(data) !== "[object Array]") {
+						/*
+							Assume that this is intended to be an array of this
+							item, which is possible if the item has multiple
+							allowed types.
+
+							Let validation sort it out later. Just try to render
+							it now.
+						*/
+						data = [ data ];
+					}
 
 					if (data) {
 						html += '<fieldset>';
