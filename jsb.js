@@ -143,7 +143,15 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 	this.iddata[id].type = type;
 
 	if (title && title.length > 0 && !schema.hidden) {
-		html += '<label>';
+		html += '<label';
+
+		if (schema.description) {
+			html += ' title="';
+			html += htmlEncode(schema.description);
+			html += '"';
+		}
+
+		html += '>';
 		html += htmlEncode(
 			title.charAt(0).toUpperCase() + title.slice(1)
 		);
@@ -492,18 +500,19 @@ JSB.prototype.validate = function(el)
 	if (!(el = el || this.element)) {
 		return(true);
 	}
-	this.removeClass(el, 'invalid');
-	try {
-		el.removeAttribute('title');
-	} catch (e) {
-	}
-
 	switch (el.nodeName.toLowerCase()) {
+		case 'label':
 		case 'button':
 			/* Ignore add and remove buttons */
 			break;
 
 		default:
+			this.removeClass(el, 'invalid');
+			try {
+				el.removeAttribute('title');
+			} catch (e) {
+			}
+
 			if ((detail = this.getDetail(el))) {
 				if (tv4) {
 					value = this.getValue(el);
