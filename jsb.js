@@ -142,7 +142,7 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 	}
 	this.iddata[id].type = type;
 
-	if (title && title.length > 0) {
+	if (title && title.length > 0 && !schema.hidden) {
 		html += '<label>';
 		html += htmlEncode(
 			title.charAt(0).toUpperCase() + title.slice(1)
@@ -152,7 +152,7 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 		html += '</label>';
 	}
 
-	if (schema['enum']) {
+	if (schema['enum'] && !schema.hidden) {
 		html += '<select name="' + id + '">\n';
 
 		if (!schema.required) {
@@ -176,9 +176,27 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 			case 'string':
 			case 'number':
 			case 'integer':
-				html += '<input name="' + id + '" type="text" class="' + type + '"';
+			case 'boolean':
+				var inputtype	= 'text';
 
-				if (data) {
+				// TODO	Add support for html5 form types, possibly use range for
+				//		numbers with a min and max?
+
+				if (type == 'boolean') {
+					inputtype = 'checkbox';
+				}
+
+				if (schema.hidden) {
+					inputtype = 'hidden';
+				}
+
+				html += '<input name="' + id + '" type="' + inputtype + '" class="' + type + '"';
+
+				if (type == 'boolean') {
+					if (data) {
+						html += ' checked';
+					}
+				} else if (data) {
 					html += ' value="' + htmlEncode(data) + '"';
 				}
 				if (schema.readonly) {
@@ -186,21 +204,10 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 				}
 
 				html += '/>\n';
-				html += '<br />\n';
-				break;
 
-			case 'boolean':
-				html += '<input name="' + id + '" type="checkbox" class="' + type + '"';
-
-				if (data) {
-					html += ' checked';
+				if (!schema.hidden) {
+					html += '<br />\n';
 				}
-				if (schema.readonly) {
-					html += ' readonly';
-				}
-
-				html += '/>\n';
-				html += '<br />\n';
 				break;
 
 			case 'array':
@@ -487,7 +494,7 @@ JSB.prototype.validate = function(el)
 	}
 	this.removeClass(el, 'invalid');
 	try {
-		el.setAttribute('title', '');
+		el.removeAttribute('title');
 	} catch (e) {
 	}
 
