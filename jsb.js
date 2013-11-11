@@ -303,8 +303,8 @@ JSB.prototype.render = function(options)
 					span.innerHTML = this.insertArrayItem(detail.item, detail.data, options);
 					container.appendChild(span);
 				}
-				this.validate(container);
 
+				this.validate();
 				break;
 
 			case 'del':
@@ -320,12 +320,14 @@ JSB.prototype.render = function(options)
 						p.parentNode.removeChild(p);
 					}
 				}
+
+				this.validate();
 				break;
 		}
 	}.bind(this));
 
 	this.element.addEventListener('change', function(e) {
-		this.validate(e.target);
+		this.validate();
 	}.bind(this));
 
 	this.validate();
@@ -472,49 +474,50 @@ JSB.prototype.validate = function(el)
 {
 	var detail;
 	var valid	= true;
-
-	if (!el && tv4) {
-		/*
-			If tv4 is present then validate the whole document in one go as well
-			as doing the individual items for the sake of highlighting.
-		*/
-		this.schema = this.fixupSchema(this.schema);
-		valid = tv4.validate(this.getValue(this.element), this.schema, true, true);
-
-		if (!valid) {
-			console.log(tv4.error);
-		}
-	}
+	var value;
 
 	if (!(el = el || this.element)) {
 		return(true);
 	}
 	this.removeClass(el, 'invalid');
+	try {
+		el.setAttribute('title', '');
+	} catch (e) {
+	}
 
-	if (!el.childNodes || el.childNodes.length == 0) {
-		if ((detail = this.getDetail(el))) {
-			if (tv4) {
-				/* Use tv4 if loaded */
-				if (!tv4.validate(this.getValue(el), detail.schema)) {
-					// console.log(tv4.error);
+	switch (el.nodeName.toLowerCase()) {
+		case 'button':
+			/* Ignore add and remove buttons */
+			break;
 
-					this.addClass(el, 'invalid');
-					return(false);
-				}
-			} else if (detail.schema.required) {
-				/* Very simple built in validation */
+		default:
+			if ((detail = this.getDetail(el))) {
+				if (tv4) {
+					value = this.getValue(el);
 
-				if (!el.value || el.value.length == 0) {
-					this.addClass(el, 'invalid');
-					return(false);
+					/* Use tv4 if loaded */
+					if (value && !tv4.validate(value, detail.schema, false, true)) {
+						console.log(tv4.error);
+
+						this.addClass(el, 'invalid');
+						el.setAttribute('title', tv4.error.message);
+						valid = false;
+					}
+				} else if (detail.schema.required) {
+					/* Very simple built in validation */
+
+					if (!el.value || el.value.length == 0) {
+						this.addClass(el, 'invalid');
+						valid = false;
+					}
 				}
 			}
-		}
-	} else {
-		for (var i = 0, n; n = el.childNodes[i]; i++) {
-			if (!this.validate(n)) {
-				valid = false;
-			}
+			break;
+	}
+
+	for (var i = 0, n; n = el.childNodes[i]; i++) {
+		if (!this.validate(n)) {
+			valid = false;
 		}
 	}
 
