@@ -181,6 +181,9 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 				if (data) {
 					html += ' value="' + htmlEncode(data) + '"';
 				}
+				if (schema.readonly) {
+					html += ' readonly';
+				}
 
 				html += '/>\n';
 				html += '<br />\n';
@@ -191,6 +194,9 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 
 				if (data) {
 					html += ' checked';
+				}
+				if (schema.readonly) {
+					html += ' readonly';
 				}
 
 				html += '/>\n';
