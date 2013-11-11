@@ -157,10 +157,7 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 		}
 
 		html += '>';
-		html += htmlEncode(
-			title.charAt(0).toUpperCase() + title.slice(1)
-		);
-
+		html += htmlEncode(title);
 		html += ':';
 		html += '</label>';
 	}
@@ -199,7 +196,7 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 					}
 					html += '>';
 					if (data) {
-						html += htmlEncode(data);
+						html += htmlEncode(data.toString());
 					}
 					html += '</textarea><br/>';
 
@@ -231,7 +228,7 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 						html += ' checked';
 					}
 				} else if (data) {
-					html += ' value="' + htmlEncode(data) + '"';
+					html += ' value="' + htmlEncode(data.toString()) + '"';
 				}
 				if (schema.readonly) {
 					html += ' readonly';
@@ -252,7 +249,10 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 					this.iddata[id].item	= item;
 
 					html += '<span class="' + id + ' ' + type + '">';
-					html += '<button class="add_button" name="' + id + '">+</button>';
+
+					if (!schema.readonly) {
+						html += '<button class="add_button" name="' + id + '">+</button>';
+					}
 
 					switch (Object.prototype.toString.call(data)) {
 						case '[object Array]':
@@ -278,7 +278,7 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 						html += '<fieldset>';
 						for (var i = 0; i < data.length; i++) {
 							html += '<span>';
-							html += this.insertArrayItem(item, data[i]);
+							html += this.insertArrayItem(item, data[i], options, schema.readonly);
 							html += '</span>';
 						}
 						html += '</fieldset>';
@@ -310,12 +310,14 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 	return(html);
 };
 
-JSB.prototype.insertArrayItem = function(item, data, options)
+JSB.prototype.insertArrayItem = function(item, data, options, readonly)
 {
 	var id		= this.uniqueName();
 	var html	= '';
 
-	html += '<button class="del_button" name="' + id + '">X</button>';
+	if (!readonly) {
+		html += '<button class="del_button" name="' + id + '">X</button>';
+	}
 
 	html += this.renderHTML(item, null, data, options);
 
