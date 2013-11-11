@@ -275,13 +275,23 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 					}
 
 					if (data) {
+						var was = item.readonly || false;
+
+						if (schema.preserveItems) {
+							item.readonly = true;
+						}
+
 						html += '<fieldset>';
 						for (var i = 0; i < data.length; i++) {
 							html += '<span>';
-							html += this.insertArrayItem(item, data[i], options, schema.readonly);
+							html += this.insertArrayItem(item, data[i], options, schema.readonly || schema.preserveItems);
 							html += '</span>';
 						}
 						html += '</fieldset>';
+
+						if (schema.preserveItems) {
+							item.readonly = was;
+						}
 					}
 
 					html += '</span><br/>';
