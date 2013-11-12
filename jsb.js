@@ -182,6 +182,12 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 
 		html += '</select><br/>\n';
 	} else {
+		var classname = type;
+
+		if (schema.readonly) {
+			classname += ' readonly';
+		}
+
 		switch (type) {
 			case 'string':
 				if (schema.large && !schema.hidden) {
@@ -190,7 +196,9 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 						should render this field using a textarea instead of a
 						simple input.
 					*/
-					html += '<textarea name="' + id + '" class="' + type + '"';
+					html += '<textarea name="' + id +
+								'" class="' + classname + '"';
+
 					if (schema.readonly) {
 						html += ' readonly';
 					}
@@ -221,7 +229,8 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 					inputtype = 'hidden';
 				}
 
-				html += '<input name="' + id + '" type="' + inputtype + '" class="' + type + '"';
+				html += '<input name="' + id + '" type="' + inputtype +
+								'" class="' + classname + '"';
 
 				if (type == 'boolean') {
 					if (data) {
@@ -248,7 +257,7 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 					this.iddata[id].action	= 'add';
 					this.iddata[id].item	= item;
 
-					html += '<span class="' + id + ' ' + type + '">';
+					html += '<span class="' + id + ' ' + classname + '">';
 
 					if (!schema.readonly) {
 						html += '<button class="add_button" name="' + id + '">+</button>';
@@ -303,7 +312,7 @@ JSB.prototype.renderHTML = function(schema, name, data, options)
 					/* A normal object */
 					var properties	= Object.keys(schema.properties);
 
-					html += '<fieldset name="' + id + '" class="' + type + '">\n';
+					html += '<fieldset name="' + id + '" class="' + classname + '">\n';
 
 					for (var i = 0, p; p = schema.properties[properties[i]]; i++) {
 						html += this.renderHTML(p, properties[i], (data || {})[properties[i]], options);
